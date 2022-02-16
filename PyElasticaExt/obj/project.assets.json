@@ -18,6 +18,62 @@
           "build/Grasshopper.targets": {}
         }
       },
+      "Microsoft.CSharp/4.5.0": {
+        "type": "package",
+        "frameworkAssemblies": [
+          "Microsoft.CSharp"
+        ],
+        "compile": {
+          "ref/net45/_._": {}
+        },
+        "runtime": {
+          "lib/net45/_._": {}
+        }
+      },
+      "Numpy/3.7.1.28": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.CSharp": "4.5.0",
+          "Python.Included": "3.7.3.13"
+        },
+        "compile": {
+          "lib/netstandard2.0/Numpy.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Numpy.dll": {}
+        }
+      },
+      "Python.Deployment/1.2.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Python.Deployment.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Python.Deployment.dll": {}
+        }
+      },
+      "Python.Included/3.7.3.13": {
+        "type": "package",
+        "dependencies": {
+          "Python.Deployment": "1.2.0",
+          "pythonnet_netstandard_py37_win": "2.5.1"
+        },
+        "compile": {
+          "lib/netstandard2.0/Python.Included.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Python.Included.dll": {}
+        }
+      },
+      "pythonnet_netstandard_py37_win/2.5.1": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Python.Runtime.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Python.Runtime.dll": {}
+        }
+      },
       "RhinoCommon/7.13.21348.13001": {
         "type": "package",
         "compile": {
@@ -52,6 +108,123 @@
         "lib/net48/Grasshopper.xml"
       ]
     },
+    "Microsoft.CSharp/4.5.0": {
+      "sha512": "kaj6Wb4qoMuH3HySFJhxwQfe8R/sJsNJnANrvv8WdFPMoNbKY5htfNscv+LHCu5ipz+49m2e+WQXpLXr9XYemQ==",
+      "type": "package",
+      "path": "microsoft.csharp/4.5.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/MonoAndroid10/_._",
+        "lib/MonoTouch10/_._",
+        "lib/net45/_._",
+        "lib/netcore50/Microsoft.CSharp.dll",
+        "lib/netcoreapp2.0/_._",
+        "lib/netstandard1.3/Microsoft.CSharp.dll",
+        "lib/netstandard2.0/Microsoft.CSharp.dll",
+        "lib/portable-net45+win8+wp8+wpa81/_._",
+        "lib/uap10.0.16299/_._",
+        "lib/win8/_._",
+        "lib/wp80/_._",
+        "lib/wpa81/_._",
+        "lib/xamarinios10/_._",
+        "lib/xamarinmac20/_._",
+        "lib/xamarintvos10/_._",
+        "lib/xamarinwatchos10/_._",
+        "microsoft.csharp.4.5.0.nupkg.sha512",
+        "microsoft.csharp.nuspec",
+        "ref/MonoAndroid10/_._",
+        "ref/MonoTouch10/_._",
+        "ref/net45/_._",
+        "ref/netcore50/Microsoft.CSharp.dll",
+        "ref/netcore50/Microsoft.CSharp.xml",
+        "ref/netcore50/de/Microsoft.CSharp.xml",
+        "ref/netcore50/es/Microsoft.CSharp.xml",
+        "ref/netcore50/fr/Microsoft.CSharp.xml",
+        "ref/netcore50/it/Microsoft.CSharp.xml",
+        "ref/netcore50/ja/Microsoft.CSharp.xml",
+        "ref/netcore50/ko/Microsoft.CSharp.xml",
+        "ref/netcore50/ru/Microsoft.CSharp.xml",
+        "ref/netcore50/zh-hans/Microsoft.CSharp.xml",
+        "ref/netcore50/zh-hant/Microsoft.CSharp.xml",
+        "ref/netcoreapp2.0/_._",
+        "ref/netstandard1.0/Microsoft.CSharp.dll",
+        "ref/netstandard1.0/Microsoft.CSharp.xml",
+        "ref/netstandard1.0/de/Microsoft.CSharp.xml",
+        "ref/netstandard1.0/es/Microsoft.CSharp.xml",
+        "ref/netstandard1.0/fr/Microsoft.CSharp.xml",
+        "ref/netstandard1.0/it/Microsoft.CSharp.xml",
+        "ref/netstandard1.0/ja/Microsoft.CSharp.xml",
+        "ref/netstandard1.0/ko/Microsoft.CSharp.xml",
+        "ref/netstandard1.0/ru/Microsoft.CSharp.xml",
+        "ref/netstandard1.0/zh-hans/Microsoft.CSharp.xml",
+        "ref/netstandard1.0/zh-hant/Microsoft.CSharp.xml",
+        "ref/netstandard2.0/Microsoft.CSharp.dll",
+        "ref/netstandard2.0/Microsoft.CSharp.xml",
+        "ref/portable-net45+win8+wp8+wpa81/_._",
+        "ref/uap10.0.16299/_._",
+        "ref/win8/_._",
+        "ref/wp80/_._",
+        "ref/wpa81/_._",
+        "ref/xamarinios10/_._",
+        "ref/xamarinmac20/_._",
+        "ref/xamarintvos10/_._",
+        "ref/xamarinwatchos10/_._",
+        "useSharedDesignerContext.txt",
+        "version.txt"
+      ]
+    },
+    "Numpy/3.7.1.28": {
+      "sha512": "Sbk+wez7rAPE3AHPE74+fxjvmikEiR+V3+PxDSc85GEhWJX7orBDdy9r3xT0Jd3PS/yjyhT4JXwFWkILk9mDJg==",
+      "type": "package",
+      "path": "numpy/3.7.1.28",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/Numpy.dll",
+        "numpy.3.7.1.28.nupkg.sha512",
+        "numpy.nuspec"
+      ]
+    },
+    "Python.Deployment/1.2.0": {
+      "sha512": "g5US41l+hftiUrnPwNp5dtp/Dql16Bn3csyqgXo/pTvyAqCbZim6zUUvUUO1YasxzxY4F/16ughKR2lG21PhuA==",
+      "type": "package",
+      "path": "python.deployment/1.2.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/Python.Deployment.dll",
+        "python.deployment.1.2.0.nupkg.sha512",
+        "python.deployment.nuspec"
+      ]
+    },
+    "Python.Included/3.7.3.13": {
+      "sha512": "FYao1eP0dpMDgsKplYPIujP4r9zB6UZvOX0nwiMYiZg65a/AQGDTfbOBQwbFVsNhKpFGPVxHKWfoIhDv7NASuA==",
+      "type": "package",
+      "path": "python.included/3.7.3.13",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/Python.Included.dll",
+        "python.included.3.7.3.13.nupkg.sha512",
+        "python.included.nuspec"
+      ]
+    },
+    "pythonnet_netstandard_py37_win/2.5.1": {
+      "sha512": "RMsXNGdWfq8eCSmrA/lWXXiB2j8fT/IkXANTtAh7z0jN9ydN5JJQ+EGdAw8g+GvG4WBxEjyv4TUqDERuMN826Q==",
+      "type": "package",
+      "path": "pythonnet_netstandard_py37_win/2.5.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/netstandard2.0/Python.Runtime.dll",
+        "lib/netstandard2.0/Python.Runtime.xml",
+        "pythonnet_netstandard_py37_win.2.5.1.nupkg.sha512",
+        "pythonnet_netstandard_py37_win.nuspec"
+      ]
+    },
     "RhinoCommon/7.13.21348.13001": {
       "sha512": "JQdaNw61ddBqIe08E9O4N/grwrN1hjDHcYW7tWylwCZyFR7SepoCD4NS+6LN6+oSQhNbhLi9Bf+hQOFYFdRAEA==",
       "type": "package",
@@ -74,7 +247,8 @@
   },
   "projectFileDependencyGroups": {
     ".NETFramework,Version=v4.8": [
-      "Grasshopper >= 7.13.21348.13001"
+      "Grasshopper >= 7.13.21348.13001",
+      "Numpy >= 3.7.1.28"
     ]
   },
   "packageFolders": {
@@ -120,6 +294,10 @@
             "include": "Compile, Build",
             "target": "Package",
             "version": "[7.13.21348.13001, )"
+          },
+          "Numpy": {
+            "target": "Package",
+            "version": "[3.7.1.28, )"
           }
         },
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.200\\RuntimeIdentifierGraph.json"

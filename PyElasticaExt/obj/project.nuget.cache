@@ -1,10 +1,15 @@
 {
   "version": 2,
-  "dgSpecHash": "ynJd0VGo5WJC3jo7UbdC2DA9GozyonCZtlUk1lWdqmF1rpz/W0GIb4G9nfdx066zo7ESHOORMXUoNhvffNrTbg==",
+  "dgSpecHash": "F/221PSHj9w1yAco+6EcZ+DxuAy6xI3G0GX18t8UgU8xj4gIdFVn//2O7siu1IJzKDsjF6Q3T68IWtrAoV1iZQ==",
   "success": true,
   "projectFilePath": "D:\\repo\\PyElasticaExt\\PyElasticaExt\\PyElasticaExt.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Kim\\.nuget\\packages\\grasshopper\\7.13.21348.13001\\grasshopper.7.13.21348.13001.nupkg.sha512",
+    "C:\\Users\\Kim\\.nuget\\packages\\microsoft.csharp\\4.5.0\\microsoft.csharp.4.5.0.nupkg.sha512",
+    "C:\\Users\\Kim\\.nuget\\packages\\numpy\\3.7.1.28\\numpy.3.7.1.28.nupkg.sha512",
+    "C:\\Users\\Kim\\.nuget\\packages\\python.deployment\\1.2.0\\python.deployment.1.2.0.nupkg.sha512",
+    "C:\\Users\\Kim\\.nuget\\packages\\python.included\\3.7.3.13\\python.included.3.7.3.13.nupkg.sha512",
+    "C:\\Users\\Kim\\.nuget\\packages\\pythonnet_netstandard_py37_win\\2.5.1\\pythonnet_netstandard_py37_win.2.5.1.nupkg.sha512",
     "C:\\Users\\Kim\\.nuget\\packages\\rhinocommon\\7.13.21348.13001\\rhinocommon.7.13.21348.13001.nupkg.sha512"
   ],
   "logs": []
