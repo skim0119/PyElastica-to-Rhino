@@ -16,8 +16,8 @@ namespace PyElasticaExt
         /// new tabs/panels will automatically be created.
         /// </summary>
         public PyElasticaImport()
-          : base("CosseratRodImport", "ELCR",
-            "Construct an Archimedean, or arithmetic, spiral given its radii and number of turns.",
+          : base("CosseratRodImport", "CosseratRods",
+            "Create Cosserat Rods",
             "PyElastica", "Primitive")
         {
         }
@@ -35,6 +35,7 @@ namespace PyElasticaExt
             pManager.AddNumberParameter("Inner Radius", "R0", "Inner radius for spiral", GH_ParamAccess.item, 1.0);
             pManager.AddNumberParameter("Outer Radius", "R1", "Outer radius for spiral", GH_ParamAccess.item, 10.0);
             pManager.AddIntegerParameter("Turns", "T", "Number of turns between radii", GH_ParamAccess.item, 10);
+            pManager.AddTextParameter("FilePath", "Pa", "Path that contains PyElastica exports", GH_ParamAccess.item, "");
 
             // If you want to change properties of certain parameters, 
             // you can use the pManager instance to access them by index:
@@ -49,6 +50,7 @@ namespace PyElasticaExt
             // Use the pManager object to register your output parameters.
             // Output parameters do not have default values, but they too must have the correct access type.
             pManager.AddCurveParameter("Spiral", "S", "Spiral curve", GH_ParamAccess.item);
+            pManager.AddTextParameter("Debug", "D", "Debug Output", GH_ParamAccess.item);
 
             // Sometimes you want to hide a specific parameter from the Rhino preview.
             // You can use the HideParameter() method as a quick way:
@@ -140,7 +142,7 @@ namespace PyElasticaExt
         /// You can add image files to your project resources and access them like this:
         /// return Resources.IconForThisComponent;
         /// </summary>
-        protected override System.Drawing.Bitmap Icon => null;
+        protected override System.Drawing.Bitmap Icon => PyElasticaExt.Properties.Resources.Icon1.ToBitmap();
 
         /// <summary>
         /// Each component must have a unique Guid to identify it. 
