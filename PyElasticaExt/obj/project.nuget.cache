@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "ynJd0VGo5WJC3jo7UbdC2DA9GozyonCZtlUk1lWdqmF1rpz/W0GIb4G9nfdx066zo7ESHOORMXUoNhvffNrTbg==",
+  "success": true,
+  "projectFilePath": "D:\\repo\\PyElasticaExt\\PyElasticaExt\\PyElasticaExt.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Kim\\.nuget\\packages\\grasshopper\\7.13.21348.13001\\grasshopper.7.13.21348.13001.nupkg.sha512",
+    "C:\\Users\\Kim\\.nuget\\packages\\rhinocommon\\7.13.21348.13001\\rhinocommon.7.13.21348.13001.nupkg.sha512"
+  ],
+  "logs": []
+}

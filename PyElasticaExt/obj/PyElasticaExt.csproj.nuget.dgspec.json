@@ -1,0 +1,54 @@
+{
+  "format": 1,
+  "restore": {
+    "D:\\repo\\PyElasticaExt\\PyElasticaExt\\PyElasticaExt.csproj": {}
+  },
+  "projects": {
+    "D:\\repo\\PyElasticaExt\\PyElasticaExt\\PyElasticaExt.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\repo\\PyElasticaExt\\PyElasticaExt\\PyElasticaExt.csproj",
+        "projectName": "PyElasticaExt",
+        "projectPath": "D:\\repo\\PyElasticaExt\\PyElasticaExt\\PyElasticaExt.csproj",
+        "packagesPath": "C:\\Users\\Kim\\.nuget\\packages\\",
+        "outputPath": "D:\\repo\\PyElasticaExt\\PyElasticaExt\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Kim\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net48"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net48": {
+            "targetAlias": "net48",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net48": {
+          "targetAlias": "net48",
+          "dependencies": {
+            "Grasshopper": {
+              "include": "Compile, Build",
+              "target": "Package",
+              "version": "[7.13.21348.13001, )"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.200\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
