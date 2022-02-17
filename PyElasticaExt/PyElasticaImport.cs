@@ -4,11 +4,13 @@ using Rhino;
 using Rhino.Geometry;
 using System;
 using System.Collections.Generic;
+using Numpy;
 
 namespace PyElasticaExt
 {
     public class PyElasticaImport : GH_Component
     {
+        string testpath = "E:\\Rendering_Octopus_paper\\pickles\\curl";
         /// <summary>
         /// Each implementation of GH_Component must provide a public 
         /// constructor without any arguments.
@@ -23,9 +25,7 @@ namespace PyElasticaExt
                  category: "PyElastica",
                  subCategory: "Primitive")
         {
-            line = new Line();
         }
-        Line line;
 
         /// <summary>
         /// Registers all the input parameters for this component.
@@ -36,7 +36,7 @@ namespace PyElasticaExt
             // You can often supply default values when creating parameters.
             // All parameters must have the correct access type. If you want 
             // to import lists or trees of values, modify the ParamAccess flag.
-            pManager.AddBooleanParameter("Switch", "S", "Module switch", GH_ParamAccess.item, false);
+            pManager.AddBooleanParameter("Switch", "C", "Module switch", GH_ParamAccess.item, false);
             pManager.AddTextParameter("FilePath", "Pa", "Path that contains PyElastica exports", GH_ParamAccess.item, "");
 
             // If you want to change properties of certain parameters, 
@@ -53,6 +53,7 @@ namespace PyElasticaExt
             // Output parameters do not have default values, but they too must have the correct access type.
             pManager.AddBooleanParameter("isBuild", "B", "Indicator if build stage is done", GH_ParamAccess.item);
             pManager.AddTextParameter("Debug", "D", "Debug Output", GH_ParamAccess.item);
+            pManager.AddBooleanParameter("Succeed", "S", "Module finished", GH_ParamAccess.item);
 
             // Sometimes you want to hide a specific parameter from the Rhino preview.
             // You can use the HideParameter() method as a quick way:
@@ -107,6 +108,13 @@ namespace PyElasticaExt
 
             // Finally assign the spiral to the output parameter.
             DA.SetData(0, spiral);
+            DA.SetData(1, spiral);
+        }
+        
+        Numpy.NDarray Load(string key)
+        {
+            var data = Numpy.np.load(testpath, allow_pickle:true);
+            return new NDarray(data.self[key]);
         }
 
         Curve CreateSpiral(Plane plane, double r0, double r1, Int32 turns)
@@ -142,7 +150,6 @@ namespace PyElasticaExt
                 objectAttributes.LayerIndex = 2;
                 Rhino.RhinoDoc.ActiveDoc.Objects.AddBrep(B, objectAttributes);
             }
-            return Grasshopper.DataTree()
         }
 
         /// <summary>
@@ -159,7 +166,7 @@ namespace PyElasticaExt
         /// You can add image files to your project resources and access them like this:
         /// return Resources.IconForThisComponent;
         /// </summary>
-        protected override System.Drawing.Bitmap Icon => PyElasticaExt.Properties.Resources.Icon1.ToBitmap();
+        protected override System.Drawing.Bitmap Icon => PyElasticaExt.Properties.Resources.icons8_snake_24.ToBitmap();
 
         /// <summary>
         /// Each component must have a unique Guid to identify it. 
