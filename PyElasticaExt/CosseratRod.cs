@@ -8,7 +8,7 @@ using Numpy;
 
 namespace PyElasticaExt
 {
-    public class PyElasticaImport : GH_Component
+    public class CosseratRod : GH_Component
     {
         string testpath = "E:\\Rendering_Octopus_paper\\pickles\\curl";
         /// <summary>
@@ -18,7 +18,7 @@ namespace PyElasticaExt
         /// Subcategory the panel. If you use non-existing tab or panel names, 
         /// new tabs/panels will automatically be created.
         /// </summary>
-        public PyElasticaImport()
+        public CosseratRod()
           : base(name: "CosseratRodImport",
                  nickname: "CosseratRods",
                  description: "Create Cosserat Rods",
@@ -115,6 +115,31 @@ namespace PyElasticaExt
         {
             var data = Numpy.np.load(testpath, allow_pickle:true);
             return new NDarray(data.self[key]);
+        }
+
+        private Curve CreateSpiral(Plane plane, double r0, double r1, Int32 turns, double height, Int32 waves)
+        {
+            Line line = new Line(plane.Origin, plane.Origin + plane.ZAxis * height);
+
+            Point3d[] pts;
+            line.ToNurbsCurve().DivideByCount(turns * 20, true, out pts);
+
+            for(int i=0; i<pts.Length; i++)
+            {
+                double angle = i / Convert.ToDouble(pts.Length - 1) * Math.PI * 2.0 * turns;
+                double radius = r0 + 0.5 * (r1 - r0) * (1 + Math.Cos(i / Convert.ToDouble(pts.Length - 1) * Math.PI * waves));
+                Point3d pt = pts[i];
+                Point point = new Point(pt);
+                point.Translate(plane.XAxis * radius);
+                point.Rotate(angle, plane.ZAxis, plane.Origin);
+
+                pts[i] = point.Location;
+            }
+
+            Curve spiral = Curve.CreateInterpolatedCurve(pts, 3);
+            
+
+            return spiral;
         }
 
         Curve CreateSpiral(Plane plane, double r0, double r1, Int32 turns)
