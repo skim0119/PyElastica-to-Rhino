@@ -5,7 +5,7 @@ using System.Drawing;
 
 namespace PyElasticaExt
 {
-    public class PyElasticaExtInfo : GH_AssemblyInfo
+    public class PyElasticaExtInfo : GH_AssemblyInfo 
     {
         public override string Name => "PyElasticaExtension";
 

@@ -53,8 +53,7 @@ namespace PyElasticaExt
         {
             // Use the pManager object to register your output parameters.
             // Output parameters do not have default values, but they too must have the correct access type.
-            pManager.AddBrepParameter("Rod", "R", "Brep object of Cosserat Rod", GH_ParamAccess.list);
-            pManager.AddCurveParameter("CenterCurve", "CR", "Center Curvature", GH_ParamAccess.item);
+            pManager.AddBrepParameter("Rod", "R", "Brep object of Cosserat Rod", GH_ParamAccess.item);
             pManager.AddTextParameter("Debug", "D", "Debug Output", GH_ParamAccess.item);
             pManager.AddBooleanParameter("Succeed", "S", "Module finished", GH_ParamAccess.item);
 
@@ -100,10 +99,10 @@ namespace PyElasticaExt
             // Finally assign the spiral to the output parameter.
             debug_string += "Done\n";
 
-            DA.SetDataList(0, pipe);
-            DA.SetData(1, interp_curve);
-            DA.SetData(2, debug_string);
-            DA.SetData(3, true);
+            
+            DA.SetData(0, pipe[0]);
+            DA.SetData(1, debug_string);
+            DA.SetData(2, true);
         }
 
         private (List<Point3d>, List<double>) ParseData(NDarray position, NDarray radius)
