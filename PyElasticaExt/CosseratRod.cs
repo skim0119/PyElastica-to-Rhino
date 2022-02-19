@@ -90,8 +90,10 @@ namespace PyElasticaExt
             // (data.radius) has shape (timestep, n_nodes)
             List<Point3d> node_points = new List<Point3d>();
             List<double> node_radii = new List<double>();
-            (node_points, node_radii) = ParseData(data.position[timestep.ToString() + ",:,:"],
-                                                  data.radius  [timestep.ToString() + ",:"  ]);
+            ParseData(data.position[timestep.ToString() + ",:,:"],
+                      data.radius  [timestep.ToString() + ",:"  ],
+                      ref node_points,
+                      ref node_radii);
 
             Curve interp_curve = CreateInterpolation(node_points);
             var pipe = CreateRod(interp_curve, node_points, node_radii);
@@ -105,18 +107,19 @@ namespace PyElasticaExt
             DA.SetData(2, true);
         }
 
-        private (List<Point3d>, List<double>) ParseData(NDarray position, NDarray radius)
+        private void ParseData(NDarray position, NDarray radius,
+            ref List<Point3d> point_nodes, ref List<double> radii)
         {
             // Numpy data to points
-            List<Point3d> pts = new List<Point3d>();
-            List<double> radii = new List<double>(radius.GetData<double>());
+            radii.Clear();
+            radii.AddRange(radius.GetData<double>());
             int num_nodes = position.shape[1];
             for (int i = 0; i < num_nodes; ++i)
             {
                 var coord = position[":," + i.ToString()].GetData<double>();
-                pts.Add(new Point3d(coord[0], coord[1], coord[2]));
+                point_nodes.Add(new Point3d(coord[0], coord[1], coord[2]));
             }
-            return (pts, radii);
+            return;
         }
 
         private Curve CreateInterpolation(List<Point3d> node_points, int degree=3)
@@ -142,23 +145,13 @@ namespace PyElasticaExt
                 rail: curve,
                 railRadiiParameters: ts,
                 radii: radii,
-                localBlending: false,
+                localBlending: true,
                 cap: PipeCapMode.Round,
-                fitRail: true,
+                fitRail: false,
                 absoluteTolerance: MTOL,
                 angleToleranceRadians: ATOL
                 ));
             return pipe;
-        }
-
-        private void Bake(bool C, Brep B)
-        {
-            if (C)
-            {
-                Rhino.DocObjects.ObjectAttributes objectAttributes = new Rhino.DocObjects.ObjectAttributes();
-                objectAttributes.LayerIndex = 2;
-                Rhino.RhinoDoc.ActiveDoc.Objects.AddBrep(B, objectAttributes);
-            }
         }
 
         /// <summary>

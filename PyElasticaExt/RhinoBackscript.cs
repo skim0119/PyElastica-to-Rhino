@@ -14,61 +14,93 @@ namespace PyElasticaExt
 {
     class RhinoBackscript
     {
-        public static void CreateLayer(string layername)
+        public static Result CreateLayer(string layer_name)
         {
-            /*
-            # remove existing objects
-            sc.doc = Rhino.RhinoDoc.ActiveDoc
-            objects = rs.ObjectsByLayer(layer, False)
-            if objects and len(objects) > 0:
-            rs.DeleteObjects(objects)
-            */
-        }
-         public static Result AddLayer(RhinoDoc doc)
-        {
-            // Cook up an unused layer name
-            string unused_name = doc.Layers.GetUnusedLayerName(false);
-
-            // Prompt the user to enter a layer name
-            Rhino.Input.Custom.GetString gs = new Rhino.Input.Custom.GetString();
-            gs.SetCommandPrompt("Name of layer to add");
-            gs.SetDefaultString(unused_name);
-            gs.AcceptNothing(true);
-            gs.Get();
-            if (gs.CommandResult() != Rhino.Commands.Result.Success)
-                return gs.CommandResult();
-
-            // Was a layer named entered?
-            string layer_name = gs.StringResult().Trim();
-            if (string.IsNullOrEmpty(layer_name))
-            {
-                Rhino.RhinoApp.WriteLine("Layer name cannot be blank.");
-                return Rhino.Commands.Result.Cancel;
-            }
-
-            // Is the layer name valid?
-            if (!Rhino.DocObjects.Layer.IsValidName(layer_name))
-            {
-                Rhino.RhinoApp.WriteLine(layer_name + " is not a valid layer name.");
-                return Rhino.Commands.Result.Cancel;
-            }
+            var doc = RhinoDoc.ActiveDoc;
 
             // Does a layer with the same name already exist?
             int layer_index = doc.Layers.Find(layer_name, true);
             if (layer_index >= 0)
             {
-                Rhino.RhinoApp.WriteLine("A layer with the name {0} already exists.", layer_name);
-                return Rhino.Commands.Result.Cancel;
+                return Result.Success; // Cancel
+            }
+
+            // Was a layer named entered?
+            if (string.IsNullOrEmpty(layer_name))
+            {
+                RhinoApp.WriteLine("Layer name cannot be blank.");
+                return Result.Cancel;
+            }
+
+            // Is the layer name valid?
+            if (!Rhino.DocObjects.Layer.IsValidName(layer_name))
+            {
+                RhinoApp.WriteLine(layer_name + " is not a valid layer name.");
+                return Result.Cancel;
             }
 
             // Add a new layer to the document
             layer_index = doc.Layers.Add(layer_name, System.Drawing.Color.Black);
             if (layer_index < 0)
             {
-                Rhino.RhinoApp.WriteLine("Unable to add {0} layer.", layer_name);
-                return Rhino.Commands.Result.Failure;
+                RhinoApp.WriteLine("Unable to add {0} layer.", layer_name);
+                return Result.Failure;
             }
-            return Rhino.Commands.Result.Success;
+            return Result.Success;
+        }
+        public static Result CreateSubLayer(string parent_name, string child_name)
+        {
+            CreateLayer(parent_name);
+            var doc = RhinoDoc.ActiveDoc;
+
+            // Does a layer with the same name already exist?
+            int parent_index = doc.Layers.Find(parent_name, true);
+            Rhino.DocObjects.Layer parent_layer = doc.Layers[parent_index];
+
+            // Was a layer named entered?
+            if (string.IsNullOrEmpty(child_name))
+            {
+                RhinoApp.WriteLine("Layer name cannot be blank.");
+                return Result.Cancel;
+            }
+
+            // Is the layer name valid?
+            if (!Rhino.DocObjects.Layer.IsValidName(child_name))
+            {
+                RhinoApp.WriteLine(child_name + " is not a valid layer name.");
+                return Result.Cancel;
+            }
+            // Add a new layer to the document
+            int child_index = doc.Layers.Find(child_name, true);
+            Rhino.DocObjects.Layer child_layer = new Rhino.DocObjects.Layer();
+            child_layer.ParentLayerId = parent_layer.Id;
+            child_layer.Name = child_name;
+            child_layer.Color = System.Drawing.Color.Red;
+
+            child_index = doc.Layers.Add(child_layer);
+            if (child_index < 0)
+            {
+                //RhinoApp.WriteLine(child_name + " already made.");
+                return Result.Success;
+            }
+            return Result.Success;
+        }
+
+        public static Result CleanLayer(Rhino.DocObjects.Layer layer)
+        {
+            var doc = RhinoDoc.ActiveDoc;
+            Rhino.DocObjects.RhinoObject[] objs = doc.Objects.FindByLayer(layer);
+
+            if (objs == null || objs.Length == 0)
+            {
+                // Nothing to delete
+                return Result.Success;
+            }
+            for (int i = 0; i < objs.Length; i++)
+            {
+                doc.Objects.Delete(objs[i], quiet: true);
+            }
+            return Result.Success;
         }
     }
 }

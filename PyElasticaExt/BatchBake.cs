@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Grasshopper;
 using Grasshopper.Kernel;
+using Rhino;
 using Rhino.Geometry;
 
 namespace PyElasticaExt
@@ -24,6 +26,8 @@ namespace PyElasticaExt
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddBooleanParameter("Switch", "C", "Module switch", GH_ParamAccess.item, false);
+            pManager.AddTextParameter("LayerName", "LN", "Layer name to bake the objects", GH_ParamAccess.item);
+            pManager.AddBrepParameter("Object List", "Obj", "List of objects to bake.", GH_ParamAccess.list);
         }
 
         /// <summary>
@@ -42,32 +46,41 @@ namespace PyElasticaExt
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             bool C = false; // global safe switch
+            string layer_name = "";
             string debug_string = "";
+            List<Brep> breps = new List<Brep>();
 
             // Then we need to access the input parameters individually. 
             // When data cannot be extracted from a parameter, we should abort this method.
             if (!DA.GetData(0, ref C)) return;
+            if (!DA.GetData(1, ref layer_name)) return;
+            if (!DA.GetDataList(2, breps)) return;
+
             if(!C) return; // global safe switch
-            /*
-            # add objects
-        for idx, geo_id in enumerate(geo):
-            sc.doc = ghdoc
-            doc_object = rs.coercerhinoobject(geo_id)
-            
-            geometry = doc_object.Geometry
-            attributes = doc_object.Attributes
-            
-            sc.doc = Rhino.RhinoDoc.ActiveDoc
-        
-            rhino_ref = sc.doc.Objects.Add(geometry, attributes)
-        
-            rs.ObjectLayer(rhino_ref, layer=layer)
-        
-        # return outputs if you have them; here I try it for you:
-        sc.doc = ghdoc
-        
-        rs.Command("_-ClearUndo ")
-            */
+
+            debug_string += "data received: " + breps.Count + "\n";
+
+            RhinoBackscript.CreateSubLayer(
+                parent_name:"_simulation",
+                child_name:layer_name);
+            int layer_id = RhinoDoc.ActiveDoc.Layers.FindByFullPath("_simulation::" + layer_name, -1);
+            Rhino.DocObjects.Layer layer = RhinoDoc.ActiveDoc.Layers[layer_id];
+            debug_string += layer_name + " created (or may already exist) - " + layer_id.ToString() + "\n";
+            RhinoBackscript.CleanLayer(layer);
+            debug_string += layer_name + " cleared\n";
+
+            //List<Brep> union_breps = new List<Brep>(
+            //    Brep.CreateBooleanUnion(breps, RhinoDoc.ActiveDoc.ModelAbsoluteTolerance));
+
+            foreach(Brep br in breps)
+            {
+                Rhino.DocObjects.ObjectAttributes obj_attribute = new Rhino.DocObjects.ObjectAttributes();
+                obj_attribute.LayerIndex = layer_id;
+                Rhino.RhinoDoc.ActiveDoc.Objects.AddBrep(br, obj_attribute);
+            }
+
+            debug_string += "Done\n";
+
             DA.SetData(0, debug_string);
             DA.SetData(1, true);
         }
@@ -75,14 +88,7 @@ namespace PyElasticaExt
         /// <summary>
         /// Provides an Icon for the component.
         /// </summary>
-        protected override System.Drawing.Bitmap Icon
-        {
-            get
-            {
-                //You can add image files to your project resources and access them like this:
-                // return Resources.IconForThisComponent;
-            }
-        }
+        protected override System.Drawing.Bitmap Icon => Properties.Resources.icons8_microwave_24.ToBitmap();
 
         /// <summary>
         /// Gets the unique ID for this component. Do not change this ID after release.
