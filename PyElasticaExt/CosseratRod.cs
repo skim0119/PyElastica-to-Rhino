@@ -53,9 +53,9 @@ namespace PyElasticaExt
         {
             // Use the pManager object to register your output parameters.
             // Output parameters do not have default values, but they too must have the correct access type.
+            pManager.AddBooleanParameter("Completed", "C", "Module finished", GH_ParamAccess.item);
             pManager.AddBrepParameter("Rod", "R", "Brep object of Cosserat Rod", GH_ParamAccess.item);
             pManager.AddTextParameter("Debug", "D", "Debug Output", GH_ParamAccess.item);
-            pManager.AddBooleanParameter("Succeed", "S", "Module finished", GH_ParamAccess.item);
 
             // Sometimes you want to hide a specific parameter from the Rhino preview.
             // You can use the HideParameter() method as a quick way:
@@ -102,9 +102,9 @@ namespace PyElasticaExt
             debug_string += "Done\n";
 
             
-            DA.SetData(0, pipe[0]);
-            DA.SetData(1, debug_string);
-            DA.SetData(2, true);
+            DA.SetData(0, true);
+            DA.SetData(1, pipe[0]);
+            DA.SetData(2, debug_string);
         }
 
         private void ParseData(NDarray position, NDarray radius,

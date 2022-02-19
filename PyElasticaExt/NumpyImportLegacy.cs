@@ -40,9 +40,9 @@ namespace PyElasticaExt
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
+            pManager.AddBooleanParameter("Completed", "C", "Module finished", GH_ParamAccess.item);
             pManager.AddGenericParameter("CosseratRod", "CR", "Cosserat Rod data: Position and Radius", GH_ParamAccess.list);
             pManager.AddTextParameter("Debug", "D", "Debug Output", GH_ParamAccess.item);
-            pManager.AddBooleanParameter("Succeed", "S", "Module finished", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -68,9 +68,9 @@ namespace PyElasticaExt
 
             debug_string += "Done\n";
 
-            DA.SetDataList(0, data);
-            DA.SetData(1, debug_string);
-            DA.SetData(2, true); // indicate the completion of the module
+            DA.SetData(0, true); // indicate the completion of the module
+            DA.SetDataList(1, data);
+            DA.SetData(2, debug_string);
 
             if (data is null) { throw new AccessViolationException("failed to load data"); }
         }

@@ -33,13 +33,13 @@ namespace PyElasticaExt
         }
 
         /// <summary>
-        /// Registers all the output parameters for this component.
+        // Registers all the output parameters for this component.
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
+            pManager.AddBooleanParameter("Completed", "C", "Module finished", GH_ParamAccess.item);
             pManager.AddGenericParameter("CosseratRod", "CR", "Cosserat Rod data: Position and Radius", GH_ParamAccess.list);
             pManager.AddTextParameter("Debug", "D", "Debug Output", GH_ParamAccess.item);
-            pManager.AddBooleanParameter("Succeed", "S", "Module finished", GH_ParamAccess.item);
         }
 
         /// <summary>

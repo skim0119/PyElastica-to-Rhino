@@ -36,7 +36,8 @@ namespace PyElasticaExt
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddBooleanParameter("Succeed", "S", "Module finished", GH_ParamAccess.item);
+            pManager.AddBooleanParameter("Completed", "C", "Module finished", GH_ParamAccess.item);
+            pManager.AddTextParameter("Debug", "D", "Debug Output", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -48,7 +49,7 @@ namespace PyElasticaExt
             bool C = false; // global safe switch
             string filepath = "";
             int timestep = 0;
-            // string debug_string = "";
+            string debug_string = "";
 
             if (!DA.GetData(0, ref C)) return;
             if (!DA.GetData(1, ref filepath)) return;
@@ -67,6 +68,7 @@ namespace PyElasticaExt
             Rhino.RhinoApp.RunScript("_-CloseRenderWindow", echo:true);
 
             DA.SetData(0, true);
+            DA.SetData(1, debug_string);
         }
 
         /// <summary>
