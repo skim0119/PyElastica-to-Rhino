@@ -7,15 +7,17 @@ using Numpy;
 
 namespace PyElasticaExt
 {
-    public class NumpyImport : GH_Component
+    public class NumpyImportLegacy : GH_Component
     {
+        // TODO: DEBUG remove file path
+        string testpath = "E:\\Rendering_Octopus_paper\\pickles\\curl\\octopus_arm_test.npz";
         /// <summary>
-        /// Initializes a new instance of the NumpyImport class.
+        /// Initializes a new instance of the NumpyImport(Legacy) class.
         /// </summary>
-        public NumpyImport()
-          : base(name: "NpzImport",
-                 nickname: "NpzImport",
-                 description: "Import npz file exported from numpy.",
+        public NumpyImportLegacy()
+          : base(name: "NpzImport(Legacy)",
+                 nickname: "NpzImport(L)",
+                 description: "Import npz file exported from numpy. (Previous version)",
                  category: "PyElastica",
                  subCategory: "Import")
         {
@@ -27,8 +29,9 @@ namespace PyElasticaExt
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddBooleanParameter("Switch", "C", "Module switch", GH_ParamAccess.item, false);
-            pManager.AddTextParameter("FilePath", "Pa", "Path that contains PyElastica exports", GH_ParamAccess.item);
-            pManager.AddTextParameter("Group", "Gr", "Rod Group", GH_ParamAccess.item);
+            // TODO : DEBUG remove default filepath
+            pManager.AddTextParameter("FilePath", "Pa", "Path that contains PyElastica exports", GH_ParamAccess.item, "");
+            pManager.AddTextParameter("Group", "Gr", "Rod Group", GH_ParamAccess.item, "helical_rods");
             pManager.AddBooleanParameter("Periodic", "Pr", "Periodic rod (default:false)", GH_ParamAccess.item, false);
         }
 
@@ -48,9 +51,31 @@ namespace PyElasticaExt
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            throw new AccessViolationException("Not Implemented Yet");
+            bool C = false; // global safe switch
+            string filepath = "";
+            string debug_string = "";
+            string group = "helical_rods";
+            bool isPeriodic = false;
+
+            if (!DA.GetData(0, ref C)) return;
+            if (!DA.GetData(1, ref filepath)) return;
+            if (!DA.GetData(2, ref group)) return;
+            if (!DA.GetData(3, ref isPeriodic)) return;
+
+            if (!C) return; // global safe switch
+
+            var data = DataLoader(testpath, group, isPeriodic, ref debug_string);
+
+            debug_string += "Done\n";
+
+            DA.SetDataList(0, data);
+            DA.SetData(1, debug_string);
+            DA.SetData(2, true); // indicate the completion of the module
+
+            if (data is null) { throw new AccessViolationException("failed to load data"); }
         }
-        private List<(NDarray, NDarray)> DataLoader(string path, string group, ref string debug_string)
+
+        private List<(NDarray, NDarray)> DataLoader(string path, string group, bool isPeriodic, ref string debug_string)
         {
             List<(NDarray position, NDarray radius)> return_data = new List<(NDarray, NDarray)>();
             NDarray position_arr, radius_arr;
@@ -63,6 +88,17 @@ namespace PyElasticaExt
             {
                 debug_string += "Numpy file reading error. Either file does not exist or key does not exist in the file.\n";
                 return null;
+            }
+
+            // If not periodic, n_node has one more element
+            if (!isPeriodic)
+            {
+                radius_arr = np.append(
+                    radius_arr,
+                    np.zeros(radius_arr.shape[0], radius_arr.shape[1], 1),
+                    axis: -1);
+                radius_arr[":,:,1:"] += radius_arr[":,:,:-1"];
+                radius_arr[":,:,1:-1"] /= 2.0;
             }
 
             // Make list
@@ -78,18 +114,17 @@ namespace PyElasticaExt
             return return_data;
         }
 
-
         /// <summary>
         /// Provides an Icon for the component.
         /// </summary>
-        protected override System.Drawing.Bitmap Icon => Properties.Resources.icons8_save_24.ToBitmap();
+        protected override System.Drawing.Bitmap Icon => PyElasticaExt.Properties.Resources.icons8_save_24.ToBitmap();
 
         /// <summary>
         /// Gets the unique ID for this component. Do not change this ID after release.
         /// </summary>
         public override Guid ComponentGuid
         {
-            get { return new Guid("64DE4EF7-F817-4CDF-86D9-71AF926BE712"); }
+            get { return new Guid("792A3913-9EEB-42D4-AA76-B8C204D29262"); }
         }
     }
 }

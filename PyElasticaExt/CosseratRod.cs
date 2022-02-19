@@ -19,13 +19,14 @@ namespace PyElasticaExt
         /// new tabs/panels will automatically be created.
         /// </summary>
         public CosseratRod()
-          : base(name: "CosseratRodImport",
+          : base(name: "CosseratRods",
                  nickname: "CosseratRods",
                  description: "Create Cosserat Rods",
                  category: "PyElastica",
                  subCategory: "Primitive")
         {
         }
+        (NDarray position, NDarray radius) data = (np.empty(0), np.empty(0));
 
         /// <summary>
         /// Registers all the input parameters for this component.
@@ -37,7 +38,8 @@ namespace PyElasticaExt
             // All parameters must have the correct access type. If you want 
             // to import lists or trees of values, modify the ParamAccess flag.
             pManager.AddBooleanParameter("Switch", "C", "Module switch", GH_ParamAccess.item, false);
-            pManager.AddTextParameter("FilePath", "Pa", "Path that contains PyElastica exports", GH_ParamAccess.item, "");
+            pManager.AddGenericParameter("CosseratRod", "CR", "Cosserat Rod data: Position and Radius", GH_ParamAccess.item);
+            pManager.AddIntegerParameter("Timestep", "T", "Timestep", GH_ParamAccess.item, 0);
 
             // If you want to change properties of certain parameters, 
             // you can use the pManager instance to access them by index:
@@ -51,7 +53,8 @@ namespace PyElasticaExt
         {
             // Use the pManager object to register your output parameters.
             // Output parameters do not have default values, but they too must have the correct access type.
-            pManager.AddBooleanParameter("isBuild", "B", "Indicator if build stage is done", GH_ParamAccess.item);
+            pManager.AddBrepParameter("Rod", "R", "Brep object of Cosserat Rod", GH_ParamAccess.list);
+            pManager.AddCurveParameter("CenterCurve", "CR", "Center Curvature", GH_ParamAccess.item);
             pManager.AddTextParameter("Debug", "D", "Debug Output", GH_ParamAccess.item);
             pManager.AddBooleanParameter("Succeed", "S", "Module finished", GH_ParamAccess.item);
 
@@ -69,102 +72,84 @@ namespace PyElasticaExt
         {
             // First, we need to retrieve all data from the input parameters.
             // We'll start by declaring variables and assigning them starting values.
-            Plane plane = Plane.WorldXY;
-            double radius0 = 0.0;
-            double radius1 = 0.0;
-            int turns = 0;
-            string filepath = "";
             bool C = false; // global safe switch
-
-            Line line = new Line();
+            string debug_string = "";
+            int timestep = 0;
 
             // Then we need to access the input parameters individually. 
             // When data cannot be extracted from a parameter, we should abort this method.
             if (!DA.GetData(0, ref C)) return;
-            if (!DA.GetData(1, ref filepath)) return;
+            if (!DA.GetData(1, ref data)) return;
+            if (!DA.GetData(2, ref timestep)) return;
 
             if(!C) return; // global safe switch
 
             // We should now validate the data and warn the user if invalid data is supplied.
-            if (radius0 < 0.0)
-            {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Inner radius must be bigger than or equal to zero");
-                return;
-            }
-            if (radius1 <= radius0)
-            {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Outer radius must be bigger than the inner radius");
-                return;
-            }
-            if (turns <= 0)
-            {
-                AddRuntimeMessage(GH_RuntimeMessageLevel.Error, "Spiral turn count must be bigger than or equal to one");
-                return;
-            }
 
-            // We're set to create the spiral now. To keep the size of the SolveInstance() method small, 
-            // The actual functionality will be in a different method:
-            Curve spiral = CreateSpiral(plane, radius0, radius1, turns);
+            // Geometry
+            // (data.position) has shape (timestep, 3, n_nodes)
+            // (data.radius) has shape (timestep, n_nodes)
+            List<Point3d> node_points = new List<Point3d>();
+            List<double> node_radii = new List<double>();
+            (node_points, node_radii) = ParseData(data.position[timestep.ToString() + ",:,:"],
+                                                  data.radius  [timestep.ToString() + ",:"  ]);
+
+            Curve interp_curve = CreateInterpolation(node_points);
+            var pipe = CreateRod(interp_curve, node_points, node_radii);
 
             // Finally assign the spiral to the output parameter.
-            DA.SetData(0, spiral);
-            DA.SetData(1, spiral);
-        }
-        
-        Numpy.NDarray Load(string key)
-        {
-            var data = Numpy.np.load(testpath, allow_pickle:true);
-            return new NDarray(data.self[key]);
+            debug_string += "Done\n";
+
+            DA.SetDataList(0, pipe);
+            DA.SetData(1, interp_curve);
+            DA.SetData(2, debug_string);
+            DA.SetData(3, true);
         }
 
-        private Curve CreateSpiral(Plane plane, double r0, double r1, Int32 turns, double height, Int32 waves)
+        private (List<Point3d>, List<double>) ParseData(NDarray position, NDarray radius)
         {
-            Line line = new Line(plane.Origin, plane.Origin + plane.ZAxis * height);
-
-            Point3d[] pts;
-            line.ToNurbsCurve().DivideByCount(turns * 20, true, out pts);
-
-            for(int i=0; i<pts.Length; i++)
+            // Numpy data to points
+            List<Point3d> pts = new List<Point3d>();
+            List<double> radii = new List<double>(radius.GetData<double>());
+            int num_nodes = position.shape[1];
+            for (int i = 0; i < num_nodes; ++i)
             {
-                double angle = i / Convert.ToDouble(pts.Length - 1) * Math.PI * 2.0 * turns;
-                double radius = r0 + 0.5 * (r1 - r0) * (1 + Math.Cos(i / Convert.ToDouble(pts.Length - 1) * Math.PI * waves));
-                Point3d pt = pts[i];
-                Point point = new Point(pt);
-                point.Translate(plane.XAxis * radius);
-                point.Rotate(angle, plane.ZAxis, plane.Origin);
+                var coord = position[":," + i.ToString()].GetData<double>();
+                pts.Add(new Point3d(coord[0], coord[1], coord[2]));
+            }
+            return (pts, radii);
+        }
 
-                pts[i] = point.Location;
+        private Curve CreateInterpolation(List<Point3d> node_points, int degree=3)
+        {
+            Curve interp_curve = Curve.CreateInterpolatedCurve(node_points, degree);
+            return interp_curve;
+        }
+
+        private List<Brep> CreateRod(Curve curve, List<Point3d> points, List<double> radii)
+        {
+            double MTOL = RhinoDoc.ActiveDoc.ModelAbsoluteTolerance;
+            double ATOL = RhinoDoc.ActiveDoc.ModelAngleToleranceRadians;
+            Interval domain = curve.Domain;
+            List<double> ts = new List<double>(); // normalized (domain)
+            foreach(Point3d pt in points)
+            {
+                double t = 0.0;
+                curve.ClosestPoint(pt, out t); // get t
+                ts.Add(domain.NormalizedParameterAt(t));
             }
 
-            Curve spiral = Curve.CreateInterpolatedCurve(pts, 3);
-            
-
-            return spiral;
-        }
-
-        Curve CreateSpiral(Plane plane, double r0, double r1, Int32 turns)
-        {
-            Line l0 = new Line(plane.Origin + r0 * plane.XAxis, plane.Origin + r1 * plane.XAxis);
-            Line l1 = new Line(plane.Origin - r0 * plane.XAxis, plane.Origin - r1 * plane.XAxis);
-
-            Point3d[] p0;
-            Point3d[] p1;
-
-            l0.ToNurbsCurve().DivideByCount(turns, true, out p0);
-            l1.ToNurbsCurve().DivideByCount(turns, true, out p1);
-
-            PolyCurve spiral = new PolyCurve();
-
-            for (int i = 0; i < p0.Length - 1; i++)
-            {
-                Arc arc0 = new Arc(p0[i], plane.YAxis, p1[i + 1]);
-                Arc arc1 = new Arc(p1[i + 1], -plane.YAxis, p0[i + 1]);
-
-                spiral.Append(arc0);
-                spiral.Append(arc1);
-            }
-
-            return spiral;
+            List<Brep> pipe = new List<Brep>(Brep.CreatePipe(
+                rail: curve,
+                railRadiiParameters: ts,
+                radii: radii,
+                localBlending: false,
+                cap: PipeCapMode.Round,
+                fitRail: true,
+                absoluteTolerance: MTOL,
+                angleToleranceRadians: ATOL
+                ));
+            return pipe;
         }
 
         private void Bake(bool C, Brep B)
