@@ -6,17 +6,17 @@ using Rhino.Geometry;
 
 namespace PyElasticaExt
 {
-    public class CosseratRodPeriodic : GH_Component
+    public class CreatePath : GH_Component
     {
         /// <summary>
-        /// Initializes a new instance of the MyComponent1 class.
+        /// Initializes a new instance of the CreatePath class.
         /// </summary>
-        public CosseratRodPeriodic()
-          : base(name: "CosseratRodPeriodic",
-                 nickname: "CosseratRods(P)",
-                 description: "Create Periodic Cosserat Rods",
+        public CreatePath()
+          : base(name:"CreatePath",
+                 nickname: "Paths",
+                 description: "Create paths for multiple items.",
                  category: "PyElastica",
-                 subCategory: "Primitive")
+                 subCategory: "Import")
         {
         }
 
@@ -25,6 +25,8 @@ namespace PyElasticaExt
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
+            pManager.AddTextParameter("Directory", "Dir", "Path that contains PyElastica exports", GH_ParamAccess.item);
+            pManager.AddTextParameter("FileName", "File", "Each filename", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -32,6 +34,7 @@ namespace PyElasticaExt
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
+            pManager.AddTextParameter("Path", "Path", "List of combined paths.", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -40,6 +43,15 @@ namespace PyElasticaExt
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+            string directory = "";
+            string filename = "";
+            DA.GetData(name: "Directory", ref directory);
+            DA.GetData(name: "FileName", ref filename);
+
+            string fullpath = directory + '\\' + filename;
+            if (!System.IO.File.Exists(fullpath))
+                throw new System.IO.DirectoryNotFoundException(fullpath+" not found.");
+            DA.SetData("Path", fullpath);
         }
 
         /// <summary>
@@ -51,7 +63,7 @@ namespace PyElasticaExt
             {
                 //You can add image files to your project resources and access them like this:
                 // return Resources.IconForThisComponent;
-                return null;
+                return PyElasticaExt.Properties.Resources.icons8_check_file_24.ToBitmap();
             }
         }
 
@@ -60,7 +72,7 @@ namespace PyElasticaExt
         /// </summary>
         public override Guid ComponentGuid
         {
-            get { return new Guid("1E19DFF1-AA0F-4346-8BBD-BBCE0E73C336"); }
+            get { return new Guid("6C93909B-6E4E-4E03-8626-21B3E15FC107"); }
         }
     }
 }

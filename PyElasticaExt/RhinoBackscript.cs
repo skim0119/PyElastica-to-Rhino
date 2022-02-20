@@ -75,7 +75,7 @@ namespace PyElasticaExt
             Rhino.DocObjects.Layer child_layer = new Rhino.DocObjects.Layer();
             child_layer.ParentLayerId = parent_layer.Id;
             child_layer.Name = child_name;
-            child_layer.Color = System.Drawing.Color.Red;
+            child_layer.Color = System.Drawing.Color.Black;
 
             child_index = doc.Layers.Add(child_layer);
             if (child_index < 0)

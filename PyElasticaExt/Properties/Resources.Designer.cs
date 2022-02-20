@@ -73,6 +73,16 @@ namespace PyElasticaExt.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
+        internal static System.Drawing.Icon icons8_check_file_24 {
+            get {
+                object obj = ResourceManager.GetObject("icons8-check-file-24", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
         internal static System.Drawing.Icon icons8_loop_24 {
             get {
                 object obj = ResourceManager.GetObject("icons8-loop-24", resourceCulture);

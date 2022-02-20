@@ -9,8 +9,6 @@ namespace PyElasticaExt
 {
     public class NumpyImportLegacy : GH_Component
     {
-        // TODO: DEBUG remove file path
-        string testpath = "E:\\Rendering_Octopus_paper\\pickles\\curl\\octopus_arm_test.npz";
         /// <summary>
         /// Initializes a new instance of the NumpyImport(Legacy) class.
         /// </summary>
@@ -29,8 +27,7 @@ namespace PyElasticaExt
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddBooleanParameter("Switch", "C", "Module switch", GH_ParamAccess.item, false);
-            // TODO : DEBUG remove default filepath
-            pManager.AddTextParameter("FilePath", "Pa", "Path that contains PyElastica exports", GH_ParamAccess.item, "");
+            pManager.AddTextParameter("FilePath", "Pa", "Path that contains PyElastica exports", GH_ParamAccess.item);
             pManager.AddTextParameter("Group", "Gr", "Rod Group", GH_ParamAccess.item, "helical_rods");
             pManager.AddBooleanParameter("Periodic", "Pr", "Periodic rod (default:false)", GH_ParamAccess.item, false);
         }
@@ -64,7 +61,7 @@ namespace PyElasticaExt
 
             if (!C) return; // global safe switch
 
-            var data = DataLoader(testpath, group, isPeriodic, ref debug_string);
+            var data = DataLoader(filepath, group, isPeriodic, ref debug_string);
 
             debug_string += "Done\n";
 

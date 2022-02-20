@@ -89,12 +89,14 @@ class RodCallback(CallBackBaseClass):
             position = system.position_collection.copy()
             velocity = system.velocity_collection.copy()
             director = system.director_collection.copy()
+            radius = system.radius.copy()
 
             self.buffer["time"].append(time)
             self.buffer["step"].append(current_step)
             self.buffer["position"].append(position)
             self.buffer["directors"].append(director)
             self.buffer["velocity"].append(velocity)
+            self.buffer["radius"].append(radius)
 
             self.buffer_size += (
                 sys.getsizeof(position)
@@ -105,9 +107,9 @@ class RodCallback(CallBackBaseClass):
                 self.buffer_size > ExportCallBack.FILE_SIZE_CUTOFF
                 or (current_step + 1) % self.save_every == 0
             ):
-                self._dump()
+                self._flush()
 
-    def _dump(self, **kwargs):
+    def _flush(self, **kwargs):
         file_path = f"{self.save_path}_{self.file_count}.dat"
         data = {k: np.array(v) for k, v in self.buffer.items()}
         savez(file_path, **data)
