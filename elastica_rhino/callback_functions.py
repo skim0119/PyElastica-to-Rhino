@@ -4,6 +4,7 @@ import warnings
 import os
 import sys
 import numpy as np
+from numpy import savez
 
 from elastica.callback_functions import CallBackBaseClass
 
@@ -30,7 +31,6 @@ class RodCallback(CallBackBaseClass):
             the file is expected to be marginally larger.
     """
 
-    AVAILABLE_METHOD = ["pickle", "npz", "tempfile"]
     FILE_SIZE_CUTOFF = 32 * 1e6  # mB
 
     def __init__(
@@ -50,9 +50,6 @@ class RodCallback(CallBackBaseClass):
             Path to save the file. If directories are prepended,
             they must exist. The filename depends on the method.
             The path is not expected to include extension.
-        method : str
-            Method name. Only the name in AVAILABLE_METHOD is
-            allowed.
         initial_file_count : int
             Initial file count index that will be appended
         save_every : int
@@ -62,9 +59,6 @@ class RodCallback(CallBackBaseClass):
         MIN_STEP_SKIP = 100
         if step_skip <= MIN_STEP_SKIP:
             warnings.warn(f"We recommend step_skip at least {MIN_STEP_SKIP}")
-        assert (
-            method in ExportCallBack.AVAILABLE_METHOD
-        ), f"The exporting method ({method}) is not supported. Please use one of {ExportCallBack.AVAILABLE_METHOD}."
         assert os.path.exists(path), "The export path does not exist."
 
         # Argument Parameters
@@ -79,22 +73,6 @@ class RodCallback(CallBackBaseClass):
 
         self.buffer = defaultdict(list)
         self.buffer_size = 0
-
-        # Module
-        if method == ExportCallBack.AVAILABLE_METHOD[0]:
-            import pickle
-
-            self._pickle = pickle
-        elif method == ExportCallBack.AVAILABLE_METHOD[1]:
-            from numpy import savez
-
-            self._savez = savez
-        elif method == ExportCallBack.AVAILABLE_METHOD[2]:
-            import tempfile
-            import pickle
-
-            self._tempfile = tempfile.NamedTemporaryFile(delete=False)
-            self._pickle = pickle
 
     def make_callback(self, system, time, current_step: int):
         """
@@ -132,17 +110,7 @@ class RodCallback(CallBackBaseClass):
     def _dump(self, **kwargs):
         file_path = f"{self.save_path}_{self.file_count}.dat"
         data = {k: np.array(v) for k, v in self.buffer.items()}
-        if self.method == ExportCallBack.AVAILABLE_METHOD[0]:
-            # pickle
-            with open(file_path, "wb") as file:
-                self._pickle.dump(data, file)
-        elif self.method == ExportCallBack.AVAILABLE_METHOD[1]:
-            # npz
-            self._savez(file_path, **data)
-        elif self.method == ExportCallBack.AVAILABLE_METHOD[2]:
-            # tempfile
-            file = open(self._tempfile.name, "wb")
-            self._pickle.dump(data, file)
+        savez(file_path, **data)
 
         self.file_count += 1
         self.buffer_size = 0
