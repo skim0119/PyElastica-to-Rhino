@@ -12,7 +12,7 @@ namespace PyElasticaExt
         /// Initializes a new instance of the CreatePath class.
         /// </summary>
         public CreatePath()
-          : base(name:"CreatePath",
+          : base(name:"CombinePath",
                  nickname: "Paths",
                  description: "Create paths for multiple items.",
                  category: "PyElastica",

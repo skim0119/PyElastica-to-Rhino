@@ -35,7 +35,6 @@ namespace PyElasticaExt
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddBooleanParameter("Completed", "C", "Module finished", GH_ParamAccess.item);
             pManager.AddTextParameter("Debug", "D", "Debug Output", GH_ParamAccess.item);
         }
 
@@ -81,8 +80,7 @@ namespace PyElasticaExt
 
             debug_string += "Done\n";
 
-            DA.SetData(0, true);
-            DA.SetData(1, debug_string);
+            DA.SetData(0, debug_string);
         }
 
         /// <summary>

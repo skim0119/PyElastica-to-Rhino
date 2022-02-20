@@ -17,7 +17,7 @@ PyElastica extension and Rhino plugin for Cosserat Rod (+ Rigid Body) visualizat
     - Shape of position: `(num_rod, timesteps, 3, num_nodes)`
     - Shape of radius: `(num_rod, timesteps, 3, num_elements)`
     - If `periodic` is set to true, the trapazoidal averaging step is skipped for the radius.
-- All modules includes `C (switch)` input and `C (completed)` output. The purpose is to serialize the execution.
+- All modules include `C (switch)` input. The purpose is to serialize the execution.
 - All modules include `D (debug)` output which returns the debugging text to inform progression or runtime error.
 
 ## PyElastica Extension
