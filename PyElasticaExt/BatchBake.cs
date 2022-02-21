@@ -36,6 +36,7 @@ namespace PyElasticaExt
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
             pManager.AddTextParameter("Debug", "D", "Debug Output", GH_ParamAccess.item);
+            pManager.AddBooleanParameter("Complete", "C", "Completion indicator", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -56,6 +57,7 @@ namespace PyElasticaExt
             if (!DA.GetDataList(2, breps)) return;
 
             if(!C) return; // global safe switch
+            DA.SetData(1, false);
 
             debug_string += "data received: " + breps.Count + "\n";
 
@@ -81,6 +83,7 @@ namespace PyElasticaExt
             debug_string += "Done\n";
 
             DA.SetData(0, debug_string);
+            DA.SetData(1, true);
         }
 
         /// <summary>
