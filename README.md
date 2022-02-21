@@ -22,14 +22,22 @@ PyElastica extension and Rhino plugin for Cosserat Rod (+ Rigid Body) visualizat
 
 ## PyElastica Extension
 
-> Work In Progress
-
 ### CollectiveExport 
 
 ```py
+data_collector = RhinoExportCollector(directory, fps)
 ```
 
-### RhinoCallback
+### Export Callbacks
 
 ```py
+simulation.collect_diagnostics(rod).using(
+    ExportGeometry,
+    data_collector
+)
 ```
+
+- ExportGeometry
+- ExportStrain (work in progress)
+- ExportInternalStress (work in progress)
+- ExportExternalStress (work in progress)
