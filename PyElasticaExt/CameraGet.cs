@@ -23,6 +23,7 @@ namespace PyElasticaExt
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
+            pManager.AddTextParameter("NamedView", "View", "Name of the view", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -30,6 +31,9 @@ namespace PyElasticaExt
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
+            pManager.AddPointParameter("Location", "Loc", "Camera location", GH_ParamAccess.item);
+            pManager.AddPointParameter("Target", "Tar", "Camera target", GH_ParamAccess.item);
+            pManager.AddGenericParameter("Viewport", "View", "Viewport object", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -38,7 +42,14 @@ namespace PyElasticaExt
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            var vp = Rhino.RhinoDoc.ActiveDoc.NamedViews.FindByName(Name=)
+            string view_name = "";
+            if (!DA.GetData("NamedView", ref view_name)) return;
+
+            int vp_id = Rhino.RhinoDoc.ActiveDoc.NamedViews.FindByName(Name = view_name);
+            var vp = Rhino.RhinoDoc.ActiveDoc.NamedViews[vp_id].Viewport;
+            DA.SetData("Location", vp.CameraLocation);
+            DA.SetData("Target", vp.TargetPoint);
+            DA.SetData("Viewport", vp);
         }
 
         /// <summary>
