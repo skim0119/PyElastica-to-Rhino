@@ -23,6 +23,9 @@ namespace PyElasticaExt
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
+            pManager.AddGenericParameter("Viewport", "View", "Viewport object", GH_ParamAccess.item);
+            pManager.AddPointParameter("Location", "Loc", "Camera location", GH_ParamAccess.item);
+            pManager.AddPointParameter("Target", "Tar", "Camera target", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -30,6 +33,7 @@ namespace PyElasticaExt
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
+            pManager.AddBooleanParameter("C", "Completed", "Return true when all operations are done.", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -38,6 +42,20 @@ namespace PyElasticaExt
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+            Rhino.DocObjects.ViewportInfo vp = new Rhino.DocObjects.ViewportInfo();
+            Point3d loc = new Point3d();
+            Point3d tar = new Point3d();
+
+            DA.SetData("C", false);
+            if (!DA.GetData("Viewport", ref vp)) return;
+            if (!DA.GetData("Location", ref loc)) return;
+            if (!DA.GetData("Target", ref tar)) return;
+
+
+            vp.SetCameraLocation(loc);
+            vp.SetCameraDirection(tar - loc);
+
+            DA.SetData("C", true);
         }
 
         /// <summary>
