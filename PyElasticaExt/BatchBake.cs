@@ -56,8 +56,10 @@ namespace PyElasticaExt
             if (!DA.GetData(1, ref layer_name)) return;
             if (!DA.GetDataList(2, breps)) return;
 
-            if(!C) return; // global safe switch
             DA.SetData(1, false);
+
+            // Check data structure and validity
+            if(!C) return; // global safe switch
 
             debug_string += "data received: " + breps.Count + "\n";
 
