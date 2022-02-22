@@ -73,9 +73,39 @@ namespace PyElasticaExt.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
+        internal static System.Drawing.Icon icons8_camera_50 {
+            get {
+                object obj = ResourceManager.GetObject("icons8-camera-50", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon icons8_camera_identification_50 {
+            get {
+                object obj = ResourceManager.GetObject("icons8-camera-identification-50", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
         internal static System.Drawing.Icon icons8_check_file_24 {
             get {
                 object obj = ResourceManager.GetObject("icons8-check-file-24", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon icons8_cylinder_32 {
+            get {
+                object obj = ResourceManager.GetObject("icons8-cylinder-32", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
@@ -126,6 +156,16 @@ namespace PyElasticaExt.Properties {
         internal static System.Drawing.Icon icons8_snake_24 {
             get {
                 object obj = ResourceManager.GetObject("icons8-snake-24", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon icons8_sphere_30 {
+            get {
+                object obj = ResourceManager.GetObject("icons8-sphere-30", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
