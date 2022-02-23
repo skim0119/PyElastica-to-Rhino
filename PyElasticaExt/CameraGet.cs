@@ -33,7 +33,7 @@ namespace PyElasticaExt
         {
             pManager.AddPointParameter("Location", "Loc", "Camera location", GH_ParamAccess.item);
             pManager.AddPointParameter("Target", "Tar", "Camera target", GH_ParamAccess.item);
-            pManager.AddGenericParameter("Viewport", "View", "Viewport object", GH_ParamAccess.item);
+            pManager.AddIntegerParameter("Viewport_id", "ViewID", "Viewport id", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace PyElasticaExt
             var vp = Rhino.RhinoDoc.ActiveDoc.NamedViews[vp_id].Viewport;
             DA.SetData("Location", vp.CameraLocation);
             DA.SetData("Target", vp.TargetPoint);
-            DA.SetData("Viewport", vp);
+            DA.SetData("Viewport_id", vp_id);
         }
 
         /// <summary>

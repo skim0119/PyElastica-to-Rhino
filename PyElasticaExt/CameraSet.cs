@@ -23,7 +23,7 @@ namespace PyElasticaExt
         /// </summary>
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
-            pManager.AddGenericParameter("Viewport", "View", "Viewport object", GH_ParamAccess.item);
+            //pManager.AddGenericParameter("Viewport_id", "ViewID", "Viewport id", GH_ParamAccess.item);
             pManager.AddPointParameter("Location", "Loc", "Camera location", GH_ParamAccess.item);
             pManager.AddPointParameter("Target", "Tar", "Camera target", GH_ParamAccess.item);
         }
@@ -33,6 +33,8 @@ namespace PyElasticaExt
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
+            pManager.AddPointParameter("Location", "Loc", "Camera location", GH_ParamAccess.item);
+            pManager.AddPointParameter("Target", "Tar", "Camera target", GH_ParamAccess.item);
             pManager.AddBooleanParameter("C", "Completed", "Return true when all operations are done.", GH_ParamAccess.item);
         }
 
@@ -42,19 +44,36 @@ namespace PyElasticaExt
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            Rhino.DocObjects.ViewportInfo vp = new Rhino.DocObjects.ViewportInfo();
+            int vp_id = new int();
             Point3d loc = new Point3d();
             Point3d tar = new Point3d();
 
             DA.SetData("C", false);
-            if (!DA.GetData("Viewport", ref vp)) return;
+            //if (!DA.GetData("Viewport_id", ref vp_id)) return;
             if (!DA.GetData("Location", ref loc)) return;
             if (!DA.GetData("Target", ref tar)) return;
 
+            var vp = Rhino.RhinoDoc.ActiveDoc.Views.ActiveView.ActiveViewport;
+            vp.SetCameraLocation(loc, true);
+            vp.SetCameraDirection(tar - loc, true);
 
+            /*
+            var vp = Rhino.RhinoDoc.ActiveDoc.NamedViews[vp_id].Viewport;
+            Rhino.Display.RhinoView view = Rhino.RhinoDoc.ActiveDoc.Views.ActiveView;
+
+            vp.IsCameraDirectionLocked = false;
+            vp.IsCameraLocationLocked = false;
             vp.SetCameraLocation(loc);
             vp.SetCameraDirection(tar - loc);
 
+            Rhino.RhinoDoc.ActiveDoc.NamedViews.Restore();
+            Rhino.RhinoDoc.ActiveDoc.NamedViews.Restore(vp_id, view.ActiveViewport);
+            Rhino.RhinoDoc.ActiveDoc.Views.Redraw();
+            Rhino.RhinoDoc.ActiveDoc.Views.ActiveView.Redraw();
+            */
+
+            DA.SetData("Location", vp.CameraLocation);
+            DA.SetData("Target", vp.CameraTarget);
             DA.SetData("C", true);
         }
 
