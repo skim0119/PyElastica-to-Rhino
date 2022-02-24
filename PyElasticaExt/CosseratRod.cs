@@ -10,7 +10,6 @@ namespace PyElasticaExt
 {
     public class CosseratRod : GH_Component
     {
-        string testpath = "E:\\Rendering_Octopus_paper\\pickles\\curl";
         /// <summary>
         /// Each implementation of GH_Component must provide a public 
         /// constructor without any arguments.
@@ -26,7 +25,6 @@ namespace PyElasticaExt
                  subCategory: "Primitive")
         {
         }
-        (NDarray position, NDarray radius) data = (np.empty(0), np.empty(0));
 
         /// <summary>
         /// Registers all the input parameters for this component.
@@ -73,6 +71,7 @@ namespace PyElasticaExt
             bool C = false; // global safe switch
             string debug_string = "";
             int timestep = 0;
+            (NDarray position, NDarray radius) data = (np.empty(0), np.empty(0));
 
             // Then we need to access the input parameters individually. 
             // When data cannot be extracted from a parameter, we should abort this method.
