@@ -25,6 +25,7 @@ namespace PyElasticaExt
                  subCategory: "Primitive")
         {
         }
+        (NDarray position, NDarray radius) data = (np.empty(0), np.empty(0));
 
         /// <summary>
         /// Registers all the input parameters for this component.
@@ -36,6 +37,7 @@ namespace PyElasticaExt
             // All parameters must have the correct access type. If you want 
             // to import lists or trees of values, modify the ParamAccess flag.
             pManager.AddBooleanParameter("Switch", "C", "Module switch", GH_ParamAccess.item, false);
+            pManager.AddBooleanParameter("Reload", "Re", "Reload switch", GH_ParamAccess.item, false);
             pManager.AddGenericParameter("CosseratRod", "CR", "Cosserat Rod data: Position and Radius", GH_ParamAccess.item);
             pManager.AddIntegerParameter("Timestep", "T", "Timestep", GH_ParamAccess.item, 0);
 
@@ -69,15 +71,17 @@ namespace PyElasticaExt
             // First, we need to retrieve all data from the input parameters.
             // We'll start by declaring variables and assigning them starting values.
             bool C = false; // global safe switch
+            bool reload = false; // force reload data
             string debug_string = "";
             int timestep = 0;
-            (NDarray position, NDarray radius) data = (np.empty(0), np.empty(0));
 
             // Then we need to access the input parameters individually. 
             // When data cannot be extracted from a parameter, we should abort this method.
             if (!DA.GetData(0, ref C)) return;
-            if (!DA.GetData(1, ref data)) return;
-            if (!DA.GetData(2, ref timestep)) return;
+            if (!DA.GetData(1, ref reload)) return;
+            if (reload)
+                if (!DA.GetData(2, ref data)) return;
+            if (!DA.GetData(3, ref timestep)) return;
 
             if(!C) return; // global safe switch
 
