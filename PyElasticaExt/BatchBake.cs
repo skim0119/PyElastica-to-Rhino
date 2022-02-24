@@ -26,7 +26,7 @@ namespace PyElasticaExt
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddBooleanParameter("Switch", "C", "Module switch", GH_ParamAccess.item, false);
-            pManager.AddTextParameter("LayerName", "LN", "Layer name to bake the objects", GH_ParamAccess.item);
+            pManager.AddIntegerParameter("LayerID", "Ly", "Layer id to bake the objects", GH_ParamAccess.item);
             pManager.AddBrepParameter("Object List", "Obj", "List of objects to bake.", GH_ParamAccess.list);
         }
 
@@ -46,14 +46,14 @@ namespace PyElasticaExt
         protected override void SolveInstance(IGH_DataAccess DA)
         {
             bool C = false; // global safe switch
-            string layer_name = "";
+            int layer_id = -1;
             string debug_string = "";
             List<Brep> breps = new List<Brep>();
 
             // Then we need to access the input parameters individually. 
             // When data cannot be extracted from a parameter, we should abort this method.
             if (!DA.GetData(0, ref C)) return;
-            if (!DA.GetData(1, ref layer_name)) return;
+            if (!DA.GetData(1, ref layer_id)) return;
             if (!DA.GetDataList(2, breps)) return;
 
             DA.SetData(1, false);
@@ -63,18 +63,6 @@ namespace PyElasticaExt
 
             debug_string += "data received: " + breps.Count + "\n";
 
-            RhinoBackscript.CreateSubLayer(
-                parent_name:"_simulation",
-                child_name:layer_name);
-            int layer_id = RhinoDoc.ActiveDoc.Layers.FindByFullPath("_simulation::" + layer_name, -1);
-            Rhino.DocObjects.Layer layer = RhinoDoc.ActiveDoc.Layers[layer_id];
-            debug_string += layer_name + " created (or may already exist) - " + layer_id.ToString() + "\n";
-            RhinoBackscript.CleanLayer(layer);
-            debug_string += layer_name + " cleared\n";
-
-            //List<Brep> union_breps = new List<Brep>(
-            //    Brep.CreateBooleanUnion(breps, RhinoDoc.ActiveDoc.ModelAbsoluteTolerance));
-
             foreach(Brep br in breps)
             {
                 Rhino.DocObjects.ObjectAttributes obj_attribute = new Rhino.DocObjects.ObjectAttributes();
@@ -83,6 +71,7 @@ namespace PyElasticaExt
             }
 
             debug_string += "Done\n";
+
 
             DA.SetData(0, debug_string);
             DA.SetData(1, true);

@@ -61,6 +61,7 @@ namespace PyElasticaExt
 
             var view = Rhino.RhinoDoc.ActiveDoc.Views.ActiveView;
 
+
             var view_capture = new Rhino.Display.ViewCapture
             {
                 Width = view.ActiveViewport.Size.Width,
