@@ -1,26 +1,25 @@
+﻿using System;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Collections.Generic;
+
 using Grasshopper;
 using Grasshopper.Kernel;
 using Rhino;
 using Rhino.Geometry;
-using System;
-using System.Diagnostics;
-using System.Collections.Generic;
+
 using Numpy;
 
 namespace PyElasticaExt
 {
-    public class CosseratRod : GH_Component
+    public class CosseratRodParallel : GH_Component
     {
         /// <summary>
-        /// Each implementation of GH_Component must provide a public 
-        /// constructor without any arguments.
-        /// Category represents the Tab in which the component will appear, 
-        /// Subcategory the panel. If you use non-existing tab or panel names, 
-        /// new tabs/panels will automatically be created.
+        /// Initializes a new instance of the CosseratRodParallel class.
         /// </summary>
-        public CosseratRod()
-          : base(name: "CosseratRods",
-                 nickname: "CosseratRods",
+        public CosseratRodParallel()
+          : base(name: "CosseratRods(Parallel)",
+                 nickname: "CosseratRods(Parallel)",
                  description: "Create Cosserat Rods",
                  category: "PyElastica",
                  subCategory: "Primitive")
@@ -74,8 +73,9 @@ namespace PyElasticaExt
             bool C = false; // global safe switch
             string debug_string = "";
             int timestep = 0;
-            List<(NDarray, NDarray)> data_list = new List<(NDarray, NDarray)>();
-            List<Brep> brep_list = new List<Brep>();
+            List<(NDarray position, NDarray radius)> data_list = new List<(NDarray, NDarray)>();
+            //List<Brep> brep_list = new List<Brep>();
+            System.Collections.Concurrent.ConcurrentBag<Brep> brep_list = new System.Collections.Concurrent.ConcurrentBag<Brep>();
 
             // Then we need to access the input parameters individually. 
             // When data cannot be extracted from a parameter, we should abort this method.
@@ -91,7 +91,7 @@ namespace PyElasticaExt
             // Geometry
             // (data.position) has shape (timestep, 3, n_nodes)
             // (data.radius) has shape (timestep, n_nodes)
-            foreach((NDarray position, NDarray radius) data in data_list)
+            /*foreach((NDarray position, NDarray radius) data in data_list)
             {
                 List<Point3d> node_points = new List<Point3d>();
                 List<double> node_radii = new List<double>();
@@ -103,15 +103,29 @@ namespace PyElasticaExt
                 Brep pipe = CreateRod(interp_curve, node_points, node_radii);
                 brep_list.Add(pipe);
             }
-
+            */
+            Parallel.For(0, data_list.Count, i =>
+            {
+                List<Point3d> node_points = new List<Point3d>();
+                List<double> node_radii = new List<double>();
+                lock (data_list)
+                {
+                    ParseData(data_list[i].position[timestep.ToString() + ",:,:"],
+                              data_list[i].radius[timestep.ToString() + ",:"],
+                              ref node_points,
+                              ref node_radii);
+                }
+                Curve interp_curve = CreateInterpolation(node_points);
+                Brep pipe = CreateRod(interp_curve, node_points, node_radii);
+                brep_list.Add(pipe);
+            });
 
             // Finally assign the spiral to the output parameter.
             stopwatch.Stop();
             debug_string += "Elapsed Time: " + (stopwatch.ElapsedMilliseconds/1000.0).ToString() +  "\n";
             debug_string += "Done\n";
 
-            
-            DA.SetDataList(0, brep_list);
+            DA.SetDataList(0, brep_list.ToArray());
             DA.SetData(1, debug_string);
         }
 
@@ -163,26 +177,24 @@ namespace PyElasticaExt
         }
 
         /// <summary>
-        /// The Exposure property controls where in the panel a component icon 
-        /// will appear. There are seven possible locations (primary to septenary), 
-        /// each of which can be combined with the GH_Exposure.obscure flag, which 
-        /// ensures the component will only be visible on panel dropdowns.
+        /// Provides an Icon for the component.
         /// </summary>
-        public override GH_Exposure Exposure => GH_Exposure.primary;
+        protected override System.Drawing.Bitmap Icon
+        {
+            get
+            {
+                //You can add image files to your project resources and access them like this:
+                // return Resources.IconForThisComponent;
+                return PyElasticaExt.Properties.Resources.icons8_snake_24.ToBitmap();
+            }
+        }
 
         /// <summary>
-        /// Provides an Icon for every component that will be visible in the User Interface.
-        /// Icons need to be 24x24 pixels.
-        /// You can add image files to your project resources and access them like this:
-        /// return Resources.IconForThisComponent;
+        /// Gets the unique ID for this component. Do not change this ID after release.
         /// </summary>
-        protected override System.Drawing.Bitmap Icon => PyElasticaExt.Properties.Resources.icons8_snake_24.ToBitmap();
-
-        /// <summary>
-        /// Each component must have a unique Guid to identify it. 
-        /// It is vital this Guid doesn't change otherwise old ghx files 
-        /// that use the old ID will partially fail during loading.
-        /// </summary>
-        public override Guid ComponentGuid => new Guid("64D90F35-E231-4D53-9144-B58EE294A478");
+        public override Guid ComponentGuid
+        {
+            get { return new Guid("3B10688D-7F82-4288-9611-64929001CC75"); }
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 
 using Grasshopper;
@@ -45,6 +46,8 @@ namespace PyElasticaExt
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
+            Stopwatch stopwatch = new Stopwatch();
+
             bool C = false; // global safe switch
             int layer_id = -1;
             string debug_string = "";
@@ -56,20 +59,22 @@ namespace PyElasticaExt
             if (!DA.GetData(1, ref layer_id)) return;
             if (!DA.GetDataList(2, breps)) return;
 
-            DA.SetData(1, false);
-
             // Check data structure and validity
             if(!C) return; // global safe switch
+            DA.SetData(1, false);
+            stopwatch.Start();
 
             debug_string += "data received: " + breps.Count + "\n";
 
+            Rhino.DocObjects.ObjectAttributes obj_attribute = new Rhino.DocObjects.ObjectAttributes();
+            obj_attribute.LayerIndex = layer_id;
             foreach(Brep br in breps)
             {
-                Rhino.DocObjects.ObjectAttributes obj_attribute = new Rhino.DocObjects.ObjectAttributes();
-                obj_attribute.LayerIndex = layer_id;
                 Rhino.RhinoDoc.ActiveDoc.Objects.AddBrep(br, obj_attribute);
             }
 
+            stopwatch.Stop();
+            debug_string += "Elapsed Time: " + (stopwatch.ElapsedMilliseconds/1000.0).ToString() +  "\n";
             debug_string += "Done\n";
 
 

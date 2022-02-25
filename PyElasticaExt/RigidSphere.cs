@@ -87,7 +87,7 @@ namespace PyElasticaExt
             ref Point3d center, ref double rad)
         {
             var coord = position[":,0"].GetData<double>();
-            center = new Point3d(coord[0], coord[1], coord[2]);
+            center = new Point3d(coord[0], -coord[2], coord[1]);
             rad = radius.GetData<double>()[0];
             return;
         }

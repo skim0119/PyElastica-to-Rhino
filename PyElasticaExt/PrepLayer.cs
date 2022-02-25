@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Timers;
 using System.Collections.Generic;
 
 using Grasshopper.Kernel;
@@ -26,6 +27,7 @@ namespace PyElasticaExt
         {
             pManager.AddBooleanParameter("Switch", "C", "Module switch", GH_ParamAccess.item, false);
             pManager.AddTextParameter("LayerName", "LN", "Layer name to bake the objects", GH_ParamAccess.item);
+            pManager.AddGenericParameter("Toggle", "T", "Toggle", GH_ParamAccess.item);
         }
 
         /// <summary>
@@ -47,9 +49,12 @@ namespace PyElasticaExt
             bool C = false;
             string layer_name = "";
             string debug_string = "";
+            DA.SetData("Complete", false);
             
             if (!DA.GetData("Switch", ref C)) return;
             if (!DA.GetData("LayerName", ref layer_name)) return;
+
+            if (!C) return;
 
             RhinoBackscript.CreateSubLayer(
                 parent_name:"_simulation",
@@ -60,11 +65,12 @@ namespace PyElasticaExt
             debug_string += layer_name + " created (or may already exist) - " + layer_id.ToString() + "\n";
 
             RhinoBackscript.CleanLayer(layer);
+            Rhino.RhinoDoc.ActiveDoc.ClearUndoRecords(true);
             debug_string += layer_name + " cleared\n";
 
             DA.SetData(0, layer_id);
             DA.SetData(1, debug_string);
-            DA.SetData(2, true);
+            DA.SetData("Complete", true);
         }
 
         /// <summary>
