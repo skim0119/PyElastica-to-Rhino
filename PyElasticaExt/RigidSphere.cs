@@ -28,7 +28,7 @@ namespace PyElasticaExt
         protected override void RegisterInputParams(GH_Component.GH_InputParamManager pManager)
         {
             pManager.AddBooleanParameter("Switch", "C", "Module switch", GH_ParamAccess.item, false);
-            pManager.AddGenericParameter("RigidSphere", "RS", "Rigid Sphere data: Position and Radius", GH_ParamAccess.item);
+            pManager.AddGenericParameter("RigidSphere", "RS", "Rigid Sphere data: Position and Radius", GH_ParamAccess.list);
             pManager.AddIntegerParameter("Timestep", "T", "Timestep", GH_ParamAccess.item, 0);
         }
 
@@ -37,7 +37,7 @@ namespace PyElasticaExt
         /// </summary>
         protected override void RegisterOutputParams(GH_Component.GH_OutputParamManager pManager)
         {
-            pManager.AddBrepParameter("Sphere", "Sp", "Brep object of Rigid Sphere", GH_ParamAccess.item);
+            pManager.AddBrepParameter("Sphere", "Sp", "Brep object of Rigid Sphere", GH_ParamAccess.list);
             pManager.AddTextParameter("Debug", "D", "Debug Output", GH_ParamAccess.item);
         }
 
@@ -52,12 +52,13 @@ namespace PyElasticaExt
             bool C = false; // global safe switch
             string debug_string = "";
             int timestep = 0;
-            (NDarray position, NDarray radius) data = (np.empty(0), np.empty(0));
+            List<(NDarray position, NDarray radius)> data_list = new List<(NDarray position, NDarray radius)>();
+            List<Sphere> sphere_list = new List<Sphere>();
 
             // Then we need to access the input parameters individually. 
             // When data cannot be extracted from a parameter, we should abort this method.
             if (!DA.GetData(0, ref C)) return;
-            if (!DA.GetData(1, ref data)) return;
+            if (!DA.GetDataList(1, data_list)) return;
             if (!DA.GetData(2, ref timestep)) return;
 
             if(!C) return; // global safe switch
@@ -67,19 +68,23 @@ namespace PyElasticaExt
             // Geometry
             // (data.position) has shape (timestep, 3, n_nodes)
             // (data.radius) has shape (timestep, n_nodes)
-            Point3d center = new Point3d();
-            double radius = new double();
-            ParseData(data.position[timestep.ToString() + ",:,:"],
-                      data.radius  [timestep.ToString() + ",:"  ],
-                      ref center,
-                      ref radius);
+            for (int i = 0; i < data_list.Count; i++)
+            {
+                Point3d center = new Point3d();
+                double radius = new double();
+                ParseData(data_list[i].position[timestep.ToString() + ",:,:"],
+                          data_list[i].radius[timestep.ToString() + ",:"],
+                          ref center,
+                          ref radius);
 
-            var sphere = CreateSphere(center, radius);
+                var sphere = CreateSphere(center, radius);
+                sphere_list.Add(sphere);
+            }
 
             // Finally assign the spiral to the output parameter.
             debug_string += "Done\n";
 
-            DA.SetData(0, sphere);
+            DA.SetDataList(0, sphere_list);
             DA.SetData(1, debug_string);
         }
 
