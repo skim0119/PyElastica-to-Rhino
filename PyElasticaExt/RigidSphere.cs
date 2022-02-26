@@ -1,22 +1,24 @@
 ﻿using System;
+using System.Threading.Tasks;
+using System.Diagnostics;
 using System.Collections.Generic;
 
-using Rhino;
-using Rhino.Geometry;
 using Grasshopper;
 using Grasshopper.Kernel;
-using Numpy;
+using Rhino;
+using Rhino.Geometry;
 
+using Numpy;
 
 namespace PyElasticaExt
 {
     public class RigidSphere : GH_Component
     {
         /// <summary>
-        /// Initializes a new instance of the RigidSphere class.
+        /// Initializes a new instance of the RigidSphereParallel class.
         /// </summary>
         public RigidSphere()
-          : base("RigidSphere", "Sphere",
+          : base("RigidSphere(Thread)", "Sphere(Thread)",
               "Create Sphere from PyElastica data",
               "PyElastica", "Primitive")
         {
@@ -49,11 +51,13 @@ namespace PyElasticaExt
         {
             // First, we need to retrieve all data from the input parameters.
             // We'll start by declaring variables and assigning them starting values.
+            Stopwatch stopwatch = new Stopwatch();
+
             bool C = false; // global safe switch
             string debug_string = "";
             int timestep = 0;
             List<(NDarray position, NDarray radius)> data_list = new List<(NDarray position, NDarray radius)>();
-            List<Sphere> sphere_list = new List<Sphere>();
+            System.Collections.Concurrent.ConcurrentBag<Sphere> sphere_list = new System.Collections.Concurrent.ConcurrentBag<Sphere>();
 
             // Then we need to access the input parameters individually. 
             // When data cannot be extracted from a parameter, we should abort this method.
@@ -62,29 +66,35 @@ namespace PyElasticaExt
             if (!DA.GetData(2, ref timestep)) return;
 
             if(!C) return; // global safe switch
+            stopwatch.Start();
 
             // We should now validate the data and warn the user if invalid data is supplied.
 
             // Geometry
             // (data.position) has shape (timestep, 3, n_nodes)
             // (data.radius) has shape (timestep, n_nodes)
-            for (int i = 0; i < data_list.Count; i++)
+            Parallel.For(0, data_list.Count, i =>
             {
                 Point3d center = new Point3d();
                 double radius = new double();
-                ParseData(data_list[i].position[timestep.ToString() + ",:,:"],
-                          data_list[i].radius[timestep.ToString() + ",:"],
-                          ref center,
-                          ref radius);
-
+                lock (data_list)
+                {
+                    ParseData(data_list[i].position[timestep.ToString() + ",:,:"],
+                              data_list[i].radius[timestep.ToString() + ",:"],
+                              ref center,
+                              ref radius);
+                }
                 var sphere = CreateSphere(center, radius);
+
                 sphere_list.Add(sphere);
-            }
+            });
 
             // Finally assign the spiral to the output parameter.
+            stopwatch.Stop();
+            debug_string += "Elapsed Time: " + (stopwatch.ElapsedMilliseconds/1000.0).ToString() +  "\n";
             debug_string += "Done\n";
 
-            DA.SetDataList(0, sphere_list);
+            DA.SetDataList(0, sphere_list.ToArray());
             DA.SetData(1, debug_string);
         }
 
@@ -92,7 +102,8 @@ namespace PyElasticaExt
             ref Point3d center, ref double rad)
         {
             var coord = position[":,0"].GetData<double>();
-            center = new Point3d(coord[0], -coord[2], coord[1]);
+            // center = new Point3d(coord[0], -coord[2], coord[1]);
+            center = new Point3d(coord[0], coord[1], coord[2]);
             rad = radius.GetData<double>()[0];
             return;
         }
@@ -123,7 +134,7 @@ namespace PyElasticaExt
         /// </summary>
         public override Guid ComponentGuid
         {
-            get { return new Guid("18CAB5E1-46B0-49EB-94E9-2EE68C0661AA"); }
+            get { return new Guid("BBE919E4-C095-4E5C-8503-24AFDD337FC5"); }
         }
     }
 }
