@@ -1,4 +1,5 @@
 __doc__ = """ Modules containing callback classes for Rhino visualization """
+__all__ = ['ExportGeometry']
 
 import warnings
 import os
@@ -6,39 +7,15 @@ import sys
 import numpy as np
 from numpy import savez
 
-from elastica.callback_functions import CallBackBaseClass
+from elastica_rhino.collector import RhinoExportCollector
 
 
-class CallbackCollection:
-    pass
-
-
-class RodCallback(CallBackBaseClass):
-    """
-    ExportCallback is an example callback class to demonstrate
-    how to export rod-data into data file.
-    If one wants to customize the saving data, we recommend to
-    override `make_callback` method.
-        Class Attributes
-        ----------------
-        AVAILABLE_METHOD
-            Supported method to save the file. We recommend
-            binary save to maintain the tensor structure of
-            data.
-        FILE_SIZE_CUTOFF
-            Maximum buffer size for each file. If the buffer
-            size exceed, new file is created. Actual size of
-            the file is expected to be marginally larger.
-    """
-
-    FILE_SIZE_CUTOFF = 32 * 1e6  # mB
+class ExportGeometry(CallBackBaseClass):
 
     def __init__(
         self,
+        collector: RhinoExportCollector,
         step_skip: int,
-        path: str,
-        method: str,
-        initial_file_count: int = 0,
         save_every: int = 1e8,
     ):
         """
@@ -46,26 +23,13 @@ class RodCallback(CallBackBaseClass):
         ----------
         step_skip : int
             Collect data at each step_skip steps.
-        path : str
-            Path to save the file. If directories are prepended,
-            they must exist. The filename depends on the method.
-            The path is not expected to include extension.
-        initial_file_count : int
-            Initial file count index that will be appended
         save_every : int
             Save the file every save_every steps. (default=1e8)
         """
-        # Assertions
-        MIN_STEP_SKIP = 100
-        if step_skip <= MIN_STEP_SKIP:
-            warnings.warn(f"We recommend step_skip at least {MIN_STEP_SKIP}")
-        assert os.path.exists(path), "The export path does not exist."
 
         # Argument Parameters
+        self.collector = collector
         self.step_skip = step_skip
-        self.save_path = path
-        self.method = method
-        self.file_count = initial_file_count
         self.save_every = save_every
 
         # Data collector
