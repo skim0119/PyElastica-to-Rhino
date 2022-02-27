@@ -1,4 +1,6 @@
-__all__ = ["CallbackCollection"]
+__all__ = ["RhinoExportCollector"]
+
+from typing import Dict
 
 import os
 import sys
@@ -37,7 +39,7 @@ class RhinoExportCollector:
 
         self.file_count = 0
 
-    def register(self, group: str, buffer: dict[list], step_skip: int) -> int:
+    def register(self, group: str, buffer: Dict[str, list], step_skip: int) -> int:
         assert (
             step_skip == self.step_skip
         ), "Step-skip for the callback must equal to the step-skip of the collector. Otherwise, different collector must be used."

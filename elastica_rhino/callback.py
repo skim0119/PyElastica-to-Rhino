@@ -9,8 +9,8 @@ from numpy import savez
 
 from collections import defaultdict
 
+from elastica.callback_functions import CallBackBaseClass
 from elastica_rhino.collector import RhinoExportCollector
-
 
 class ExportGeometry(CallBackBaseClass):
     def __init__(
