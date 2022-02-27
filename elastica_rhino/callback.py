@@ -27,7 +27,7 @@ class ExportGeometry(CallBackBaseClass):
         self.buffer = defaultdict(list)
 
         # Register
-        self.registry = collector.register(group, self.buffer)
+        self.registry = collector.register(group, self.buffer, step_skip)
 
     def make_callback(self, system, time, current_step: int):
         """
@@ -45,9 +45,8 @@ class ExportGeometry(CallBackBaseClass):
             radius = system.radius.copy()
             buffer_size += sys.getsizeof(position) + sys.getsizeof(radius)
 
-            self.buffer["time"].append(time)
-            self.buffer["step"].append(current_step)
+            self.buffer["time"].append(time)  # This must exist for collector
             self.buffer["position"].append(position)
             self.buffer["radius"].append(radius)
 
-            self.collector.update_size(buffer_size)
+            self.collector.update(buffer_size)

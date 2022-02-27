@@ -36,7 +36,7 @@ The grasshopper module import `npz` file. In the legacy import module, we expect
 
 > For sphere, the `number of elements` and the `number of nodes` are both `1`. In such case, a `sphere module` must be used in grasshopper.
 
-## PyElastica Extension (work in process)
+## PyElastica Extension
 
 We provide a data collector extension to PyElastica to easily collect the batch of data. 
 
@@ -44,7 +44,11 @@ We provide a data collector extension to PyElastica to easily collect the batch 
 pip install elastica-rhino
 ```
 
+
+
 ### Example Usage
+
+> The parameter `step_skip` should be the same for both collector and export-callback.
 
 ```py
 import elastica
@@ -52,12 +56,23 @@ import elastica_rhino as er
 
 ... <simulation setup>
 
-data_collector = er.RhinoExportCollector(save_path, fps)
-simulation.collect_diagnostics(rod).using(
-    er.ExportGeometry,
-    data_collector,
-    group="arm"
-    step_skip=int((1/fps)/dt),
+data_collector = er.RhinoExportCollector(
+    save_path="data",
+    step_skip=int((1/fps)/dt)
+)
+for arm in arm_list:
+    simulation.collect_diagnostics(arm).using(
+        er.ExportGeometry,
+        data_collector,
+        group="arm"
+        step_skip=int((1/fps)/dt)
+)
+for muscle in muscle_list:
+    simulation.collect_diagnostics(muscle).using(
+        er.ExportGeometry,
+        data_collector,
+        group="muscle"
+        step_skip=int((1/fps)/dt)
 )
 
 ... <simulation setup>
@@ -70,7 +85,6 @@ data_collector.save()
 ```
 
 In Rhino, objects in the same group will be collected by layers. We recommend setting the parameter `group` for the same material or color of the rods.
-
 
 ### Included Callbacks
 
