@@ -56,13 +56,17 @@ data_collector = er.RhinoExportCollector(save_path, fps)
 simulation.collect_diagnostics(rod).using(
     er.ExportGeometry,
     data_collector,
-    periodic=False,
     group="arm"
+    step_skip=int((1/fps)/dt),
 )
 
 ... <simulation setup>
 
 simulation.finalize()
+
+... <simulation run>
+
+data_collector.save()
 ```
 
 In Rhino, objects in the same group will be collected by layers. We recommend setting the parameter `group` for the same material or color of the rods.
