@@ -12,16 +12,16 @@ from collections import defaultdict
 from elastica.callback_functions import CallBackBaseClass
 from elastica_rhino.collector import RhinoExportCollector
 
+
 class ExportGeometry(CallBackBaseClass):
     def __init__(
         self,
         collector: RhinoExportCollector,
         group: str,
-        step_skip: int,
     ):
         # Argument Parameters
         self.collector = collector
-        self.step_skip = step_skip
+        self.step_skip = collector.step_skip
 
         # Data collector
         self.buffer = defaultdict(list)

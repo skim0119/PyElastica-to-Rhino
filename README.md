@@ -48,8 +48,6 @@ pip install elastica-rhino
 
 ### Example Usage
 
-> The parameter `step_skip` should be the same for both collector and export-callback.
-
 ```py
 import elastica
 import elastica_rhino as er
@@ -58,21 +56,19 @@ import elastica_rhino as er
 
 data_collector = er.RhinoExportCollector(
     save_path="data",
-    step_skip=int((1/fps)/dt)
+    step_skip=int((1/fps)/dt)  # Collect data every 'step_skip' iteration 
 )
 for arm in arm_list:
     simulation.collect_diagnostics(arm).using(
         er.ExportGeometry,
         data_collector,
         group="arm"
-        step_skip=int((1/fps)/dt)
 )
 for muscle in muscle_list:
     simulation.collect_diagnostics(muscle).using(
         er.ExportGeometry,
         data_collector,
         group="muscle"
-        step_skip=int((1/fps)/dt)
 )
 
 ... <simulation setup>
