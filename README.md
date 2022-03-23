@@ -1,6 +1,5 @@
 <div align="center">
 <h1> PyElastica to Rhino </h1>
-<h2> The package is in alpha-phase dev-stage. </h2>
 <img src="https://img.shields.io/badge/Python-3776AB?style=flat&logo=Python&logoColor=white"/>
 <img src="https://img.shields.io/badge/Rhino-801010?style=flat&logo=rhinoceros&logoColor=white"/>
 </div>
