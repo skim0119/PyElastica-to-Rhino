@@ -28,6 +28,7 @@ namespace PyElasticaExt
             pManager.AddBooleanParameter("Switch", "C", "Module switch", GH_ParamAccess.item, false);
             pManager.AddTextParameter("FilePath", "Pa", "Output Path", GH_ParamAccess.item, "");
             pManager.AddIntegerParameter("Timestep", "T", "Timestep", GH_ParamAccess.item, 0);
+            pManager.AddBooleanParameter("Transparent", "TB", "Transparent Background", GH_ParamAccess.item, false);
         }
 
         /// <summary>
@@ -49,10 +50,12 @@ namespace PyElasticaExt
             string filepath = "";
             int timestep = 0;
             string debug_string = "";
+            bool transparent_background = false;
 
             if (!DA.GetData(0, ref C)) return;
             if (!DA.GetData(1, ref filepath)) return;
             if (!DA.GetData(2, ref timestep)) return;
+            if (!DA.GetData(3, ref transparent_background)) return;
             DA.SetData(0, false);
 
             if(!C) return; // global safe switch
@@ -70,7 +73,7 @@ namespace PyElasticaExt
                 DrawAxes = false,
                 DrawGrid = false,
                 DrawGridAxes = false,
-                TransparentBackground = false 
+                TransparentBackground = transparent_background
             };
 
 
