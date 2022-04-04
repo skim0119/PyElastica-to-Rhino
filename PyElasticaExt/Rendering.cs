@@ -58,6 +58,7 @@ namespace PyElasticaExt
 
             if(!C) return; // global safe switch
 
+            System.IO.Directory.CreateDirectory(filepath);
             string savedLocation = filepath + timestep.ToString("D4") + ".png";
 
             // Rendering Script

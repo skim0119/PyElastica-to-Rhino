@@ -29,6 +29,7 @@ namespace PyElasticaExt
             pManager.AddTextParameter("FilePath", "Pa", "Output Path", GH_ParamAccess.item, "");
             pManager.AddIntegerParameter("Timestep", "T", "Timestep", GH_ParamAccess.item, 0);
             pManager.AddBooleanParameter("Transparent", "TB", "Transparent Background", GH_ParamAccess.item, false);
+            pManager.AddIntegerParameter("Scale", "Sc", "Integer image scale", GH_ParamAccess.item, 1);
         }
 
         /// <summary>
@@ -51,15 +52,18 @@ namespace PyElasticaExt
             int timestep = 0;
             string debug_string = "";
             bool transparent_background = false;
+            int image_scale = 1;
 
             if (!DA.GetData(0, ref C)) return;
             if (!DA.GetData(1, ref filepath)) return;
             if (!DA.GetData(2, ref timestep)) return;
             if (!DA.GetData(3, ref transparent_background)) return;
+            if (!DA.GetData(4, ref image_scale)) return;
             DA.SetData(0, false);
 
             if(!C) return; // global safe switch
 
+            System.IO.Directory.CreateDirectory(filepath);
             string savedLocation = filepath + timestep.ToString("D4") + ".png";
 
             var view = Rhino.RhinoDoc.ActiveDoc.Views.ActiveView;
