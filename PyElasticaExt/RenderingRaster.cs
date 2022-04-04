@@ -71,8 +71,8 @@ namespace PyElasticaExt
 
             var view_capture = new Rhino.Display.ViewCapture
             {
-                Width = view.ActiveViewport.Size.Width,
-                Height = view.ActiveViewport.Size.Height,
+                Width = view.ActiveViewport.Size.Width * image_scale,
+                Height = view.ActiveViewport.Size.Height * image_scale,
                 ScaleScreenItems = false,
                 DrawAxes = false,
                 DrawGrid = false,
