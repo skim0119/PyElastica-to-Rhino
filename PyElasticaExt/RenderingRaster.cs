@@ -80,12 +80,15 @@ namespace PyElasticaExt
                 TransparentBackground = transparent_background
             };
 
-
             var bitmap = view_capture.CaptureToBitmap(view);
             if (null != bitmap)
             {
                 bitmap.Save(savedLocation, System.Drawing.Imaging.ImageFormat.Png);
             }
+            bitmap.Dispose();
+            view_capture = null;
+            bitmap = null;
+
 
             DA.SetData(0, true);
             DA.SetData(1, debug_string);
